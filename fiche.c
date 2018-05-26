@@ -52,7 +52,7 @@ $ cat fiche.c | nc localhost 9999
 /******************************************************************************
  * Various declarations
  */
-const char *Fiche_Symbols = "abcdefghijklmnopqrstuvwxyz0123456789";
+const char *Fiche_Symbols = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
 
 /******************************************************************************
@@ -225,7 +225,7 @@ int fiche_run(Fiche_Settings settings) {
 
     // Display welcome message
     {
-        char date[64];
+        char date[22];
         get_date(date);
         print_status("Starting fiche on %s...", date);
     }
@@ -331,32 +331,22 @@ static void log_entry(const Fiche_Settings *s, const char *ip,
         return;
     }
 
-    char date[64];
+    char date[22];
     get_date(date);
 
     // Write entry to file
-    fprintf(f, "%s -- %s -- %s (%s)\n", slug, date, ip, hostname);
+    fprintf(f, "%s -- %s/%s -- %s (%s)\n", date, s->domain, slug, ip, hostname);
     fclose(f);
 }
 
 
 static void get_date(char *buf) {
-    struct tm curtime;
+    struct tm* curtime;
     time_t ltime;
 
-    ltime=time(&ltime);
-    localtime_r(&ltime, &curtime);
-
-    // Save data to provided buffer
-    if (asctime_r(&curtime, buf) == 0) {
-        // Couldn't get date, setting first byte of the
-        // buffer to zero so it won't be displayed
-        buf[0] = 0;
-        return;
-    }
-
-    // Remove newline char
-    buf[strlen(buf)-1] = 0;
+    ltime = time(NULL);
+    curtime = localtime(&ltime);
+    strftime(buf, 22, "%Y/%m/%d %H:%M:%S", curtime);
 }
 
 
@@ -550,7 +540,7 @@ static void *handle_connection(void *args) {
 
     // Print status on this connection
     {
-        char date[64];
+        char date[22];
         get_date(date);
         print_status("%s", date);
 
