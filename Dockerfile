@@ -15,6 +15,7 @@ RUN mkdir -p /var/paste \
 COPY --from=build /usr/local/bin/fiche /usr/local/bin/fiche
 
 COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]
 
